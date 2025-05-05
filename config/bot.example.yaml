@@ -1,0 +1,15 @@
+os:
+  root: 
+
+bot:
+  token:
+
+owners:
+  - username:
+    chat_id:
+    cwd:
+  - username:
+    chat_id: 
+    cwd: 
+  
+  
