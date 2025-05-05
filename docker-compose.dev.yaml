@@ -1,0 +1,10 @@
+services:
+  api:
+    container_name: impifile-bot
+    build:
+      dockerfile: ./Dockerfile
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 4G
