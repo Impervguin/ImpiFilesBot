@@ -117,7 +117,9 @@ func (b *BotWrapper) waitUpdates(ctx context.Context, wg *sync.WaitGroup, update
 		case <-ctx.Done():
 			return
 		case update := <-updates:
-			b.Logger.Infof("Got update: %+v", update)
+			if update.Message != nil {
+				b.Logger.Infow("Got update", "update_id", update.UpdateID, "message", update.Message.Text, "chat_id", update.Message.Chat.ChatID())
+			}
 			err := b.handleUpdate(ctx, &update)
 			if err != nil {
 				b.Logger.Errorf("Error on handle update: %s", err)
@@ -129,14 +131,20 @@ func (b *BotWrapper) waitUpdates(ctx context.Context, wg *sync.WaitGroup, update
 func (b *BotWrapper) handleUpdate(ctx context.Context, update *telego.Update) error {
 	b.handlersMx.RLock()
 	defer b.handlersMx.RUnlock()
+	defer func() {
+		if r := recover(); r != nil {
+			b.Logger.Errorf("Panic on handle update: %s", r)
+		}
+	}()
 
 	for _, handler := range b.handlers {
 		if handler.Filter(ctx, b, update) {
-			fmt.Println(reflect.TypeOf(handler))
+			b.Logger.Infow("Handle update", "update_id", update.UpdateID, "message", update.Message.Text, "handler", reflect.TypeOf(handler))
 			err := handler.Handle(ctx, b, update)
 			if err != nil {
 				return err
 			}
+			return nil
 		}
 	}
 	return nil
