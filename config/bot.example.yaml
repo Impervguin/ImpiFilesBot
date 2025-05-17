@@ -1,15 +1,16 @@
 os:
-  root: 
+  root: example_value
 
 bot:
-  token:
+  token: your_token_here
+  api_url: https://example.com/path
 
 owners:
-  - username:
-    chat_id:
-    cwd:
-  - username:
-    chat_id: 
-    cwd: 
+  - username: example_value
+    chat_id: 12345
+    cwd: example_value
+  - username: example_value
+    chat_id: 12345
+    cwd: example_value
   
   

@@ -40,7 +40,7 @@ type BotWrapper struct {
 	cancel     context.CancelFunc
 }
 
-func NewBotWrapper(botToken string, service *service.Service, logger Logger) (*BotWrapper, error) {
+func NewBotWrapper(botToken, apiUrl string, service *service.Service, logger Logger) (*BotWrapper, error) {
 	if logger == nil {
 		return nil, ErrNilLogger
 	}
@@ -48,7 +48,7 @@ func NewBotWrapper(botToken string, service *service.Service, logger Logger) (*B
 		return nil, ErrNilService
 	}
 
-	bot, err := telego.NewBot(botToken, telego.WithLogger(logger))
+	bot, err := telego.NewBot(botToken, telego.WithLogger(logger), telego.WithAPIServer(apiUrl))
 	if err != nil {
 		return nil, fmt.Errorf("can't create bot: %w", err)
 	}

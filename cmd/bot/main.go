@@ -23,7 +23,8 @@ type OsConfig struct {
 }
 
 type BotConfig struct {
-	Token string `yaml:"token"`
+	Token  string `yaml:"token"`
+	ApiUrl string `yaml:"api_url"`
 }
 
 type OwnerConfig struct {
@@ -77,7 +78,7 @@ func main() {
 	}
 	sugar := logger.Sugar()
 
-	bot, err := lib.NewBotWrapper(config.Bot.Token, serv, sugar)
+	bot, err := lib.NewBotWrapper(config.Bot.Token, config.Bot.ApiUrl, serv, sugar)
 	if err != nil {
 		panic(err)
 	}
