@@ -86,7 +86,11 @@ func main() {
 	// Register handlers
 	bot.RegisterHandler(handlers.NewRootHandler())
 	bot.RegisterHandler(handlers.NewChDirHandler())
-	bot.RegisterHandler(handlers.NewFileUploadHandler())
+	if config.Bot.ApiUrl == "" {
+		bot.RegisterHandler(handlers.NewFileUploadHandler(nil))
+	} else {
+		bot.RegisterHandler(handlers.NewFileUploadHandler(&config.Bot.ApiUrl))
+	}
 	bot.RegisterHandler(handlers.NewFileDownloadHandler())
 
 	bot.Start(ctx)

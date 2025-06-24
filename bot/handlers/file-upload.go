@@ -16,12 +16,20 @@ import (
 )
 
 const (
-	fileUrlFormat = "https://api.telegram.org/file/bot%s/%s"
+	defaultFileUrlFormat = "https://api.telegram.org/file/bot%s/%s"
+	fileUrlFormat        = "%s/file/bot%s/%s"
 )
 
-func uploadFile(ctx context.Context, token, filePath string) (io.Reader, error) {
+func (h *fileUploadHandler) uploadFile(ctx context.Context, token, filePath string) (io.Reader, error) {
 	fileBuf := make([]byte, 1024)
-	code, body, err := fasthttp.Get(fileBuf, fmt.Sprintf(fileUrlFormat, token, filePath))
+	var fileUrl string
+	if h.apiUrl != nil {
+		fileUrl = fmt.Sprintf(fileUrlFormat, h.apiUrl, token, filePath)
+	} else {
+		fileUrl = fmt.Sprintf(defaultFileUrlFormat, token, filePath)
+	}
+
+	code, body, err := fasthttp.Get(fileBuf, fileUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -36,11 +44,12 @@ type FileUploadHandler struct {
 	filters.FileFilter
 }
 
-func NewFileUploadHandler() *FileUploadHandler {
-	return &FileUploadHandler{}
+func NewFileUploadHandler(apiUrl *string) *FileUploadHandler {
+	return &FileUploadHandler{fileUploadHandler: fileUploadHandler{apiUrl: apiUrl}}
 }
 
 type fileUploadHandler struct {
+	apiUrl *string
 }
 
 func (h *fileUploadHandler) Handle(ctx context.Context, bot *lib.BotWrapper, update *telego.Update) error {
@@ -62,7 +71,7 @@ func (h *fileUploadHandler) Handle(ctx context.Context, bot *lib.BotWrapper, upd
 		return fmt.Errorf("fileUploadHandler: can't get file: %w", err)
 	}
 
-	reader, err := uploadFile(ctx, bot.Bot.Token(), file.FilePath)
+	reader, err := h.uploadFile(ctx, bot.Bot.Token(), file.FilePath)
 	if err != nil {
 		_, sendErr := bot.Bot.SendMessage(ctx, &telego.SendMessageParams{
 			ChatID: update.Message.Chat.ChatID(),
