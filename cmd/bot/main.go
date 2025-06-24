@@ -24,7 +24,7 @@ type OsConfig struct {
 
 type BotConfig struct {
 	Token  string `yaml:"token"`
-	ApiUrl string `yaml:"api_url"`
+	ApiUrl string `yaml:"api_url" mapstructure:"api_url"`
 }
 
 type OwnerConfig struct {
