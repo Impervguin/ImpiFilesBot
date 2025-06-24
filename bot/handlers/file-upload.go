@@ -24,7 +24,7 @@ func (h *fileUploadHandler) uploadFile(ctx context.Context, token, filePath stri
 	fileBuf := make([]byte, 1024)
 	var fileUrl string
 	if h.apiUrl != nil {
-		fileUrl = fmt.Sprintf(fileUrlFormat, h.apiUrl, token, filePath)
+		fileUrl = fmt.Sprintf(fileUrlFormat, *h.apiUrl, token, filePath)
 	} else {
 		fileUrl = fmt.Sprintf(defaultFileUrlFormat, token, filePath)
 	}
